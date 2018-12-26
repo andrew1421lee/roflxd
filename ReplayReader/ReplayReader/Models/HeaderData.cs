@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ReplayReader.Models
 {
-    class HeaderData
+    public class HeaderData
     {
     }
 }
