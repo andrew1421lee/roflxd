@@ -1,3 +1,7 @@
 .vs/
 ReplayReader/ReplayReader/obj
 ReplayReader/ReplayReader/bin
+ReplayReader/packages/
+
+
+*.swp
