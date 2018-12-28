@@ -3,5 +3,5 @@ ReplayReader/ReplayReader/obj
 ReplayReader/ReplayReader/bin
 ReplayReader/packages/
 
-
+*.csproj.user
 *.swp
