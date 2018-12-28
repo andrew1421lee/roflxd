@@ -63,6 +63,9 @@ namespace ReplayReader
                 fileResult = HeaderReader.Read(bReader);
                 Console.WriteLine(fileResult.ToString());
             }
+
+            IOutputWriter writer = new FileWriter();
+            writer.WriteObject(ConfigurationManager.AppSettings["OutputPath"], fileResult);
         }
 
         private static void SetOutpath(string path)
