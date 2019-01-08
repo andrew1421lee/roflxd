@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using ReplayReader.Models;
 
 namespace ReplayReader.Util
@@ -7,7 +8,20 @@ namespace ReplayReader.Util
     {
         public void WriteObject(string filePath, Header header)
         {
-            throw new System.NotImplementedException();
+            filePath += $"\\{header.DataHeader.MatchId}.json";
+            if(File.Exists(filePath)) { return; }
+
+            try
+            {
+                using (var writer = new StreamWriter(filePath))
+                {
+                    writer.WriteLine(header.Serialize());
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"[FileWriter] Encountered exception {ex.ToString()}");
+            }
         }
     }
 }
