@@ -10,15 +10,19 @@ namespace ReplayReader
     {
         public static Option[] OPTIONS =
             {
-                new Option {Key = "--set-output", Description = "Set the output path", Usage = "ReplayReader.exe --set-output [OUTPUT PATH]"}
+                new Option {Key = "-o", Description = "Set the output path", Usage = "ReplayReader.exe -o [OUTPUT PATH]"}
             };
+
+
+        private static int inputIndex = 0;
+        private static string outputPath = "";
 
         public static void Main(string[] args)
         {
             ////////////// CATCH ARGUMENTS
             if (args.Length < 1)
             {
-                Console.WriteLine("Usage: ReplayReader.exe [OPTIONS] [PATH]\n\tAvailable options:");
+                Console.WriteLine("Usage: ReplayReader.exe [OPTIONS] [REPLAY PATH]\n\tAvailable options:");
                 foreach (var option in OPTIONS)
                 {
                     Console.WriteLine($"\t{option.Key}\t\t{option.Description}");
@@ -28,27 +32,20 @@ namespace ReplayReader
 
             ////////////// OPTIONS
             // Currently hardcoded, fix in the future to allow for easier upgradability
-            if(args[0].Equals("--set-output"))
+            if(args[0].Equals("-o"))
             {
-                if(args.Length != 2)
+                if(args.Length != 3)
                 {
                     Console.WriteLine($"Usage: {OPTIONS[0].Usage}");
                     Environment.Exit(-1);
                 }
 
-                SetOutpath(args[1]);
-                Console.WriteLine($"Changed output path to: {args[1]}");
-                Environment.Exit(-1);
+                outputPath = args[1];
+                inputIndex += 2;
             }
 
             ////////////// READ REPLAYS
-            string inputPath = args[0];
-            // Ensure ouput path is set
-            if (string.IsNullOrEmpty(ConfigurationManager.AppSettings["OutputPath"]))
-            {
-                Console.WriteLine($"Output path is not set, run {OPTIONS[0].Key}");
-                Environment.Exit(-1);
-            }
+            string inputPath = args[inputIndex];
             // Ensure input file exists
             if (!File.Exists(inputPath))
             {
@@ -61,18 +58,15 @@ namespace ReplayReader
             using (var bReader = new BinaryReader(File.Open(inputPath, FileMode.Open)))
             {
                 fileResult = HeaderReader.Read(bReader);
-                Console.WriteLine(fileResult.ToString());
             }
 
-            IOutputWriter writer = new FileWriter();
-            writer.WriteObject(ConfigurationManager.AppSettings["OutputPath"], fileResult);
-        }
-
-        private static void SetOutpath(string path)
-        {
-            var configFile = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
-            configFile.AppSettings.Settings["OutputPath"].Value = path;
-            configFile.Save(ConfigurationSaveMode.Modified);
+            ////////////// WRITE OUTPUT
+            Console.WriteLine(fileResult.Serialize());
+            if (!string.IsNullOrEmpty(outputPath))
+            {
+                IOutputWriter writer = new FileWriter();
+                writer.WriteObject(outputPath, fileResult);
+            }
         }
     }
 }
