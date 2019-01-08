@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json.Linq;
+﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
 
 namespace ReplayReader.Models
@@ -15,6 +16,11 @@ namespace ReplayReader.Models
         public override string ToString()
         {
             return $"{Index.ToString()}\n{Metadata.ToString()}\n{DataHeader.ToString()}";
+        }
+
+        public string Serialize()
+        {
+            return JsonConvert.SerializeObject(this);
         }
     }
 
